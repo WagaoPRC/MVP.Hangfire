@@ -22,7 +22,7 @@ var connection = builder.Configuration.GetConnectionString("localhost");
 builder.Services.AddHangfire(
     op => op
     .UseSqlServerStorage(connection) // Set SqlServer and Sql ConnectionString
-    .UseRecommendedSerializerSettings() // Use Defatul Json to serialize, can change setting passing a JsonSerializerSettings object;
+    .UseRecommendedSerializerSettings() // Use Default Json to serialize, can change setting passing a JsonSerializerSettings object;
     );
 builder.Services.AddHangfireServer();
 
@@ -38,7 +38,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 5 }); // Set Default Try Attempts
+GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 5 }); // Set Default 10 Try Attempts
 app.UseHangfireDashboard();
 
 BackgroundJob.Enqueue<Worker>(x => x.MyJobFireAndForget());
@@ -48,7 +48,7 @@ BackgroundJob.Schedule<Worker>(x => x.MyDelayedjob(), TimeSpan.FromDays(2));
 
 //Continuations Job
 string jobId = BackgroundJob.Enqueue<Worker>(x => x.MyFatherJob());
-BackgroundJob.Enqueue<Worker>(jobId,x => x.MySunJob());
+BackgroundJob.Schedule<Worker>(jobId, x => x.MySunJob(),TimeSpan.FromMinutes(2));
 
 
 app.UseHttpsRedirection();

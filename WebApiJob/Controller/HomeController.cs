@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Mvc;
+using MyCronJob;
 
 namespace WebApiJob.Controller;
 
@@ -10,9 +12,10 @@ public class HomeController : ControllerBase
 
     }
 
-    [HttpGet]
-    public IActionResult actionResult()
+    [HttpGet("myjob")]
+    public IActionResult actionResult(DateTime date, TimeSpan valueTime)
     {
+        BackgroundJob.Schedule<Worker>(x => x.MyDelayedjob(), valueTime);
         return Ok();
     }
 }
